@@ -13,14 +13,14 @@ import ShowPost from "./ShowPost";
 const Home = () => {
   const [postData, setPostData] = useState("");
   const [postList, setPostList] = useState([]);
+  const [data, setData] = useState(true);
   useEffect(() => {
     const showp = window.localStorage.getItem("postList");
     if (showp != null) {
       let data = JSON.parse(showp);
       setPostList(data);
-      console.log("use Effect= " + data);
     }
-  }, []);
+  }, [data]);
   let userName = "Aakash Gupta";
   let userTheme = "Looking jobs in Software Development";
   let userProfileUrl =
@@ -37,12 +37,12 @@ const Home = () => {
       const valueToStore = {
         postBy: userName,
         postContent: postData,
-        usedWhoLikeThisPost: [],
-        commentList: {},
+        isLiked: false,
+        commentList: [],
         id: combinedPost.length + 1,
       };
       combinedPost.push(valueToStore);
-      console.log("on Button " + combinedPost);
+      console.log("on Button " + JSON.stringify(combinedPost));
       window.localStorage.setItem("postList", JSON.stringify(combinedPost));
       setPostData("");
       setPostList(combinedPost);
@@ -60,12 +60,13 @@ const Home = () => {
             <Card.Img
               style={{ height: 50, width: 198 }}
               src={userProfileBackGround}
-              alt="Card image"
+              alt="BackGround Image"
             />
             <Card.ImgOverlay className=" px-5 ms-3">
               <Image
                 style={{ height: 70, width: 70 }}
                 src={userProfileUrl}
+                alt="User Profile"
                 roundedCircle
               />
             </Card.ImgOverlay>
@@ -207,13 +208,17 @@ const Home = () => {
           </div>
         </div>
         <div className="d-flex flex-column">
-          All post
-          {postList ? (
-            postList.map((post) => {
-              <ShowPost postDetail={post} key={post.id} />;
-            })
+          {postList.length > 0 ? (
+            postList.map((post) => (
+              <ShowPost
+                postDetail={post}
+                data={data}
+                setData={setData}
+                key={post.id}
+              />
+            ))
           ) : (
-            <div></div>
+            <div> There are No Articles</div>
           )}
         </div>
       </div>
