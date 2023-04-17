@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import "../styles/App.css";
 import Mynavbar from "./Mynavbar";
-import Home from "./home";
+import Home from "./Home";
 import { Toaster } from "react-hot-toast";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import "../styles/App.css";
