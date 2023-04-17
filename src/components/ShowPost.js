@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { BiLike } from "react-icons/bi";
 import { AiTwotoneLike } from "react-icons/ai";
 import { FaRegCommentDots } from "react-icons/fa";
