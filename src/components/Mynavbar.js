@@ -9,6 +9,10 @@ import { AiFillMessage } from "react-icons/ai";
 import { TbBellFilled } from "react-icons/tb";
 import { FaUserAlt } from "react-icons/fa";
 import { SiPolywork } from "react-icons/si";
+import { useNavigate } from "react-router-dom";
+import UserContext from "./userContext";
+import { useEffect } from "react";
+import { toast } from "react-hot-toast";
 
 const Mynavbar = () => {
   const [isHomeClicked, setIshomeClicked] = useState(true);
@@ -20,6 +24,30 @@ const Mynavbar = () => {
     underline: { textDecorationLine: "underline" },
     nounderline: { textDecorationLine: "" },
   };
+  const navigate = useNavigate();
+  const usercontext = React.useContext(UserContext);
+  function logout() {
+    const valueToStore = {
+      name: "",
+      email: "",
+      password: "",
+      isLogin: false,
+    };
+    window.localStorage.setItem("LoginUser", JSON.stringify(valueToStore));
+    toast.success("Log out Successfully");
+    navigate("/");
+  }
+  useEffect(() => {
+    try {
+      let user = window.localStorage.getItem("LoginUser");
+      user = JSON.parse(user);
+      if (!user || !user.isLogin) {
+        usercontext.setname.setUserName("Login");
+      } else usercontext.setname.setUserName(user.name.toUpperCase());
+    } catch (error) {
+      console.log(error);
+    }
+  });
   function deselect() {
     setIshomeClicked(false);
     setIsNetWorkClicked(false);
@@ -138,8 +166,13 @@ const Mynavbar = () => {
           <Nav.Link>
             <div className="d-flex flex-column align-items-center px-2">
               <FaUserAlt size={30} />
-              <NavDropdown title="Me" id="navbarScrollingDropdown">
-                <NavDropdown.Item href="#action3">Logout</NavDropdown.Item>
+              <NavDropdown
+                title={usercontext.name.userName}
+                id="navbarScrollingDropdown"
+              >
+                <NavDropdown.Item href="#action3" onClick={logout}>
+                  Logout
+                </NavDropdown.Item>
               </NavDropdown>
             </div>
           </Nav.Link>
