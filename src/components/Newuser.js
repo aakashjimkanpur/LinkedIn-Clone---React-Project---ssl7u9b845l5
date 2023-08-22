@@ -4,6 +4,7 @@ import Button from "react-bootstrap/Button";
 import { FcLock } from "react-icons/fc";
 import { toast } from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
+import { Nav } from "react-bootstrap";
 
 const Newuser = () => {
   const navigate = useNavigate();
@@ -11,6 +12,8 @@ const Newuser = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
+  const baseURL = "https://linked-in-b-tfww.vercel.app";
+  // const baseURL = "http://localhost:3001";
 
   function submit() {
     if (!name || !email || !password || !confirmPassword)
@@ -34,17 +37,39 @@ const Newuser = () => {
         if (!email.match(/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/))
           toast.error("Please Enter valid Email");
       } else {
-        const isExist = window.localStorage.getItem(email.toLowerCase());
-        if (isExist) toast.error("This Email id is Already Registered with us");
-        else {
-          const valueToStore = { name: name, password: password };
-          window.localStorage.setItem(
-            email.toLowerCase(),
-            JSON.stringify(valueToStore)
-          );
-          toast.success("User Created Successfully, Please login");
-          navigate("/login");
-        }
+        fetch(`${baseURL}/user/isEmailExist`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ email: email.toLowerCase() }),
+        })
+          .then((resp) => resp.json())
+          .then((data) => {
+            if (data.isExist)
+              toast.error("This Email id is Already Registered with us");
+            else {
+              const valueToStore = { name, email, password };
+              fetch(`${baseURL}/user/newUser`, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(valueToStore),
+              })
+                .then((response) => {
+                  response.json();
+                })
+                .then((data) => {
+                  toast.success("User Created Successfully, Please login");
+                  navigate("/login");
+                })
+                .catch((err) => {
+                  console.log(err);
+                  toast.error("Some error occured err: ", err);
+                });
+            }
+          })
+          .catch((err) => {
+            console.log(" error:  ");
+            toast.error("Some Technical Error: ", err);
+          });
       }
     }
   }
@@ -69,7 +94,7 @@ const Newuser = () => {
           />
         </Form.Group>
         <Form.Group className="mb-2" controlId="formBasicEmail">
-          <Form.Label>Email address</Form.Label>
+          <Form.Label>Email Id</Form.Label>
           <Form.Control
             value={email}
             onChange={(e) => {
@@ -100,6 +125,14 @@ const Newuser = () => {
             type="password"
             placeholder="Confirm Password*"
           />
+          <Nav.Link
+            onClick={() => {
+              navigate("/login");
+            }}
+            style={{ fontSize: "12px", color: "blue", textAlignLast: "left" }}
+          >
+            Back to Login
+          </Nav.Link>
         </Form.Group>
       </Form>
       <Button onClick={submit} variant="primary" className="w-25">

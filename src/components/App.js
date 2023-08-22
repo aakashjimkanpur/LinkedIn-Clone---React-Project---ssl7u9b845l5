@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import "../styles/App.css";
 import Mynavbar from "./Mynavbar";
-import Home from "./Home";
+import Home from "./home";
 import { Toaster } from "react-hot-toast";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import "../styles/App.css";
@@ -11,11 +11,20 @@ import Newuser from "./Newuser";
 
 const App = () => {
   const [userName, setUserName] = useState("Login");
+  const [token, setToken] = useState();
+  const [userId, setUserId] = useState();
   return (
     <div id="main">
       <BrowserRouter>
         <UserContext.Provider
-          value={{ name: { userName }, setname: { setUserName } }}
+          value={{
+            userId,
+            setUserId,
+            userName,
+            setUserName,
+            token,
+            setToken,
+          }}
         >
           <Toaster />
           <Mynavbar />

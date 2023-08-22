@@ -26,28 +26,29 @@ const Mynavbar = () => {
   };
   const navigate = useNavigate();
   const usercontext = React.useContext(UserContext);
+  const baseURL = "https://linked-in-b-tfww.vercel.app";
+  // const baseURL = "http://localhost:3001";
+
   function logout() {
-    const valueToStore = {
-      name: "",
-      email: "",
-      password: "",
-      isLogin: false,
-    };
-    window.localStorage.setItem("LoginUser", JSON.stringify(valueToStore));
-    toast.success("Log out Successfully");
-    navigate("/");
+    fetch(`${baseURL}/user/logoutUser`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        authorization: usercontext.token,
+      },
+      body: JSON.stringify({ token: usercontext.token }),
+    })
+      .then((res) => res.json())
+      .then((data) => {
+        toast.success("Logout Successfully");
+        usercontext.setToken(null);
+        navigate("/login");
+      })
+      .catch((err) => {
+        toast.error("Something Error Occurred", err);
+      });
   }
-  useEffect(() => {
-    try {
-      let user = window.localStorage.getItem("LoginUser");
-      user = JSON.parse(user);
-      if (!user || !user.isLogin) {
-        usercontext.setname.setUserName("Login");
-      } else usercontext.setname.setUserName(user.name.toUpperCase());
-    } catch (error) {
-      console.log(error);
-    }
-  });
+
   function deselect() {
     setIshomeClicked(false);
     setIsNetWorkClicked(false);
@@ -167,7 +168,7 @@ const Mynavbar = () => {
             <div className="d-flex flex-column align-items-center px-2">
               <FaUserAlt size={30} />
               <NavDropdown
-                title={usercontext.name.userName}
+                title={usercontext.userName}
                 id="navbarScrollingDropdown"
               >
                 <NavDropdown.Item href="#action3" onClick={logout}>

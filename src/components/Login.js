@@ -3,38 +3,52 @@ import Form from "react-bootstrap/Form";
 import Button from "react-bootstrap/Button";
 import { FcLock } from "react-icons/fc";
 import Nav from "react-bootstrap/Nav";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import { toast } from "react-hot-toast";
+import UserContext from "./userContext";
 
 const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const navigate = useNavigate();
-
+  const usercontext = React.useContext(UserContext); //https://linked-in-b-tfww.vercel.app/
+  const baseURL = "https://linked-in-b-tfww.vercel.app";
+  // const baseURL = "http://localhost:3001";
   function login() {
     if (!email || !password) toast.error("Please Enter Email & Password");
     else {
-      let user = window.localStorage.getItem(email.toLowerCase());
-      if (!user) toast.error("This Email id is not Registered with us");
-      else {
-        user = JSON.parse(user);
-        if (password != user.password)
-          toast.error("Email & Password does not match");
-        else {
-          const valueToStore = {
-            name: user.name,
-            email: email,
-            password: user.password,
-            isLogin: true,
-          };
-          window.localStorage.setItem(
-            "LoginUser",
-            JSON.stringify(valueToStore)
-          );
-          toast.success("Login Successfully");
-          navigate("/home");
-        }
-      }
+      fetch(`${baseURL}/user/isEmailExist`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email: email.toLowerCase() }),
+      })
+        .then((resp) => resp.json())
+        .then((data) => {
+          if (!data.isExist)
+            toast.error("This Email id is not Registered with us");
+          else {
+            fetch(`${baseURL}/user/loginUser`, {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({ email, password }),
+            })
+              .then((res) => res.json())
+              .then((data) => {
+                // console.log(data);
+                if (!data.token) toast.error("Email & Password does not match");
+                else {
+                  toast.success("Login Successfully");
+                  usercontext.setToken(`Bearer ${data.token}`);
+                  usercontext.setUserId(data.id);
+                  usercontext.setUserName(data.name.toUpperCase());
+                  navigate("/home");
+                }
+              })
+              .catch((err) => {
+                toast.error("Something Error Occurred", err);
+              });
+          }
+        });
     }
   }
   return (
@@ -48,7 +62,7 @@ const Login = () => {
       </Form.Group>
       <Form className="w-25">
         <Form.Group className="mb-2" controlId="formBasicEmail">
-          <Form.Label>Email address</Form.Label>
+          <Form.Label>Email Id</Form.Label>
           <Form.Control
             value={email}
             onChange={(e) => {

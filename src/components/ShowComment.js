@@ -5,7 +5,10 @@ const ShowComment = (prop) => {
     <div>
       <hr className="m-0" />
       <div className="ps-2 mb-1 d-flex">
-        <div className="fw-bold">{prop.commentData.commentBy} </div> :
+        <div className="fw-bold" id={prop.commentData.commentByUserId}>
+          {prop.commentData.commentByUserName}{" "}
+        </div>{" "}
+        :
         <div
           style={{
             maxWidth: 500,
@@ -15,7 +18,7 @@ const ShowComment = (prop) => {
             overflow: "auto",
           }}
         >
-          {prop.commentData.data}
+          {prop.commentData.userComment}
         </div>
       </div>
     </div>
