@@ -42,6 +42,8 @@ const Mynavbar = () => {
       .then((data) => {
         toast.success("Logout Successfully");
         usercontext.setToken(null);
+        usercontext.setUserName("Login");
+        usercontext.setUserId(null);
         navigate("/login");
       })
       .catch((err) => {
